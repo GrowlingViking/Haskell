@@ -1,0 +1,51 @@
+3.1
+[Char], (Char, Char, Char), [(Bool, Char)], ([Bool], [Char]), [[a] -> [a]]
+
+3.2
+[True, False]
+[[2,3,4], [23,4,2],[1,3,4]]
+add x y z = x + y + z
+copy a = (a, a)
+apply (a b) = (a b)
+
+3.3
+second :: [a] -> a
+swap :: (a, b) -> (b, a)
+pair :: a -> b -> (a, b)
+double :: Num a => a -> a
+palindrome :: Equ a => [a] ->  Bool
+twice :: (a -> a) -> a -> a
+
+Oppgåve 1
+False :: Bool
+5 + 8 :: Num 
+(+)2 :: Num a => a -> a
+(+2) :: Num a => a -> a  
+(2+) :: Num a => a -> a
+(["foo", "bar"], 'a') :: ([String], Char)
+[(True, []), (False, [['a]])] :: [(Bool, [[Char]])]
+\x y -> y !! x :: Int - > [a] -> a
+[take, drop, \x y -> [y !! x]] :: [[a] -> [a]]
+
+Oppgåve 2
+e1 :: [Bool]
+e2 :: [[Int]]
+e3 :: [(String, Int)]
+e4 :: [(Char, Int)]
+e5 :: Num a => a -> a
+e6 :: (a, b) -> a
+e7 x = (x,x)
+
+Oppgåve 3
+[a] -> a	head
+[a] -> Int	sum eller length
+
+Oppgåve 4
+foo1 :: a -> b -> (a,b)
+foo2 :: a -> (b -> (a,b))
+foo3 :: a -> b -> (a,b)
+foo4 :: a -> (b -> (a,b))
+
+Oppgåve 5
+f x y = x + y
+g (x,y) = x + y

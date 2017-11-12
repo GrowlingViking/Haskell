@@ -1,0 +1,15 @@
+Må ha ein parsemetode som tar innputen og kaller på dei riktige metodane for riktig innput.
+Sjølvsagt med feilmelding viss dårleg innput.
+Finn forelesinga der han viste grid på skjermen med tall.
+Finn ut korleis ein leser og skriver til/frå ei fil.
+Kan ha type Board = [Pos] som i boke, men då må funksjonen som tegner brettet sjekke kvar funksjon
+om den er living eller ikkje, og skrive '.' eller 'X'.
+Med tallgridden blir ting litt forskyvet. Kan leggast til i Pos eller Board at ein forskyver
+possisjonar når dei blir lagt til.
+Kanskje omgjøre metodane survivors og births slik at dei tar to nye argumenter som bestemmer
+kor mange naboar som trengs.
+Finne ut korleis ein skal "lagra" reglane viss dei skal visast.
+Finne ein metode for å samanlikna den nye generasjonen med den forrige.
+wait 500000 metoden frå boke kan fungera som ein måte å gjera endringar skje i greit tempo.
+Finn ANSI koden for ':q'
+Gjer dei forrige vekesoppgåvene.

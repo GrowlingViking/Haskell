@@ -1,0 +1,73 @@
+Induksjonshypotese
+
+Indukjsonshypotesen ser nesten alltid lik ut som påstanden, men den betyr noko heilt anna
+Finn dei likningane ein allereie har som ser ut til å passe og prøv deg fram.
+Vis kor ein bruker Indukjsonshypotesen, i kalla steg
+Viktig å forklare korleis ein tenker undervegs
+Viss ein prøver å bevise eit program vil du uansett lære noko om programmet, sjølv om ein feiler
+Asossiativitet 
+Viktig å kunne standard induksjonsbevis til eksamen
+
+
+Exercise 16.5
+
+ved induksjon på n:
+n = 0:
+take 0 xs ++ drop 0 xs = 5+8 
+[] ++  xs = 1 = xs
+
+Ind1. anta IH for n, og vis for (n+1)
+take n xs ++ drop n xs = xs
+
+ved subindukjson på xs:
+B2. xs = []
+take (n+1) [] ++ drop (n+1) [] = 6+9 = 
+[] ++ [] = 1 = []
+
+Ind2. IH2:
+take (n+1) xs ++ drop (n+1) xs =
+
+take (n+1) (x:xs) ++ drop (n+1) (x:xs) = 7+10 =
+(x: take n xs) ++ drop n xs = 2
+x: (take n xs ++ drop n xs) = IH = x:xs
+
+
+Exercise 16.6
+Show that the number of Lea(ves) in a Tree is allways 1 greater than the number of Node(s):
+data Tree = Lead Int | Node Tree Tree
+
+blad(Leaf x) = 1
+blad(Node v h) = blad v + blad h
+
+node(Leaf x) = 0
+node(Node v h) = node v + node h + 1
+
+for alle t: Tree: 
+	blad t = node t + 1
+
+Induksjon på Tree
+Basis: t = Leaf x
+blad (Leaf x) = 1 = 1 + node (Leaf x) = 1 + 0
+
+IH: blad v = node v + 1 og blad h = node h + 1
+
+? blad (Node v h) = node (Node v h) + 1
+VS:
+blad (Node v h) = blad v + blad h = 
+                  node v + 1 node h + 1 =  #pga. IH
+				  node (Node v h) + 1
+
+
+
+B.
+Induksjon på ikkje tomme lister
+basis: [x]
+
+foldr f v [x] = f x (foldr f v []) = (f x v)
+
+induksjon:
+IH: foldr f v [x1 ... xn] = f x1 (..(f xn v)..)
+
+foldr f v [x0, x1 ... xn] 
+foldr f v x0:[x1 ... xn] = f x0 (foldr f v [x1 ... xn])
+						 = f x0 (f x1 (..(f xn v)..) )
