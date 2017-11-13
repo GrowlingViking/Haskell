@@ -13,3 +13,4 @@ Finne ein metode for å samanlikna den nye generasjonen med den forrige.
 wait 500000 metoden frå boke kan fungera som ein måte å gjera endringar skje i greit tempo.
 Finn ANSI koden for ':q'
 Gjer dei forrige vekesoppgåvene.
+Sette cursor etter gridden, goto(0, n+2)
