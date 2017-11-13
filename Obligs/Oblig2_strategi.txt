@@ -14,3 +14,4 @@ wait 500000 metoden frå boke kan fungera som ein måte å gjera endringar skje 
 Finn ANSI koden for ':q'
 Gjer dei forrige vekesoppgåvene.
 Sette cursor etter gridden, goto(0, n+2)
+Bruke readLine til xs, so pattern matche for (x:xs) case x elns.
