@@ -6,15 +6,15 @@ main = do
 parse :: History -> Board -> IO ()
 parse history board = do
     showcells board
-    let command = getChar
-    case command of  'c' -> do let n = getChar
+    command <- getChar
+    case command of  'c' -> do n <- read getChar :: Int
                                vis n
                                parse [] []
-                     'n' -> do let x = getChar
-                               let y = getChar
+                     'n' -> do x <- getChar
+                               y <- getChar
                                parse (board:history) (livingCell (x,y) board)
-                     'd' -> do let x = getChar
-                               let y = getChar
+                     'd' -> do x <- getChar
+                               y <- getChar
                                writeat (lft + 3*x, 1 + y) "."
                                parse (board:history) (killCell (x,y) board)
 
