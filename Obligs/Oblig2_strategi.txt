@@ -15,3 +15,4 @@ Finn ANSI koden for ':q'
 Gjer dei forrige vekesoppgåvene.
 Sette cursor etter gridden, goto(0, n+2)
 Bruke readLine til xs, so pattern matche for (x:xs) case x elns.
+Showcells må ta inn oldBoard og newBoard, sjekka kor celler dør, og skrive "."

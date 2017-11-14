@@ -7,7 +7,9 @@ parse :: History -> Board -> IO ()
 parse history board = do
     showcells board
     putStrLn "Enter command"
-    command <- getChar
+    input <- getLine
+    command = head input
+    --parse tall
     case command of  'c' -> do foo <- getChar
                                let n = read [foo] :: Int
                                vis n
@@ -21,9 +23,9 @@ parse history board = do
                                bar <- getChar
                                let x = read [foo] :: Int
                                let y = read [bar] :: Int
-                               writeat (lft + 3*x, 1 + y) "."
+                               --writeat (lft + 3*x, 1 + y) "."
                                parse (board:history) (killCell (x,y) board)
-                      xs -> do putStrLn xs:" Is not a valid command!"
+                      otherwise -> do putStrLn "Invalid command!"
                                parse history board
 
 type Pos = (Int, Int)
