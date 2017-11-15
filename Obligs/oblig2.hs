@@ -1,4 +1,5 @@
 --Sigurd Gravning
+import Data.Char
 
 main = do
     parse [] []
@@ -7,26 +8,18 @@ parse :: History -> Board -> IO ()
 parse history board = do
     showcells board
     putStrLn "Enter command"
-    input <- getLine
-    command = head input
-    --parse tall
-    case command of  'c' -> do foo <- getChar
-                               let n = read [foo] :: Int
-                               vis n
-                               parse [] []
-                     'n' -> do foo <- getChar
-                               bar <- getChar
-                               let x = read [foo] :: Int
-                               let y = read [bar] :: Int
-                               parse (board:history) (livingCell (x,y) board)
-                     'd' -> do foo <- getChar
-                               bar <- getChar
-                               let x = read [foo] :: Int
-                               let y = read [bar] :: Int
-                               --writeat (lft + 3*x, 1 + y) "."
-                               parse (board:history) (killCell (x,y) board)
-                      otherwise -> do putStrLn "Invalid command!"
-                               parse history board
+    command <- getLine
+    case command of ('c':xs) -> do let n = parseNum (tail xs)
+                                   vis n
+                                   parse [] []
+                    ('n':xs) -> do let x = parseNum xs
+                                   let y = parseNum (dropWhile isDigit xs)
+                                   parse (board:history) (livingCell (x,y) board)
+                    ('d':xs) -> do let x = parseNum xs
+                                   let y = parseNum (dropWhile isDigit xs)
+                                   parse (board:history) (killCell (x,y) board)
+                    otherwise -> do putStrLn "Invalid command!"
+                                    parse history board
 
 type Pos = (Int, Int)
 type Board = [Pos]
@@ -34,6 +27,9 @@ type History = [Board]
 type Rules = (Survive, Birth)
 type Survive = (Int, Int)
 type Birth = (Int, Int)
+
+parseNum :: String -> Int
+parseNum xs = read (takeWhile isDigit xs)
 
 vis :: Int -> IO ()
 vis nR = do clr
@@ -63,6 +59,7 @@ writerow i nR = do
     putStrLn ""
 
 showcells :: Board -> IO ()
+showcells [] = return ()
 showcells b = sequence_ [writeat (lft + 3*x, 1 + y) "X" | (x,y) <- b]
 
 isAlive :: Board -> Pos -> Bool

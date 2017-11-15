@@ -27,7 +27,7 @@ module Oblig1 where
     parseExpr ('i':'n':xs) = parseExpr xs
     parseExpr ('=':xs) = parseExpr xs
     parseExpr (x:xs) | isUpper x = (Var [x], xs)
-                     | isDigit x = (Nr (read (takeWhile isDigit [x])), xs)
+                     | isDigit x = (Nr (read (takeWhile isDigit xs)), xs)
                      | otherwise = error $ "Unexpected token " ++ [x]
 
     parse :: String -> Ast
