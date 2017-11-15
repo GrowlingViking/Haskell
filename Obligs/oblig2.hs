@@ -9,15 +9,15 @@ parse history board = do
     showcells board
     putStrLn "Enter command"
     command <- getLine
-    case command of ('c':xs) -> do let n = parseNum (tail xs)
-                                   vis n
-                                   parse [] []
-                    ('n':xs) -> do let x = parseNum xs
-                                   let y = parseNum (dropWhile isDigit xs)
-                                   parse (board:history) (livingCell (x,y) board)
-                    ('d':xs) -> do let x = parseNum xs
-                                   let y = parseNum (dropWhile isDigit xs)
-                                   parse (board:history) (killCell (x,y) board)
+    case command of ('c':' ':xs) -> do let n = parseNum xs
+                                       vis n
+                                       parse [] []
+                    ('n':' ':xs) -> do let x = parseNum xs
+                                       let y = parseNum (tail (dropWhile isDigit xs))
+                                       parse (board:history) (livingCell (x,y) board)
+                    ('d':' ':xs) -> do let x = parseNum xs
+                                       let y = parseNum (tail (dropWhile isDigit xs))
+                                       parse (board:history) (killCell (x,y) board)
                     otherwise -> do putStrLn "Invalid command!"
                                     parse history board
 
@@ -29,6 +29,7 @@ type Survive = (Int, Int)
 type Birth = (Int, Int)
 
 parseNum :: String -> Int
+parseNum [] = 0
 parseNum xs = read (takeWhile isDigit xs)
 
 vis :: Int -> IO ()
