@@ -2,25 +2,29 @@
 import Data.Char
 
 main = do
-    parse [] [] 0
+    parse [] [] 0 ((2,3),(3,3)) ""
                            --Size
-parse :: History -> Board -> Int -> IO ()
-parse history board size = do
+parse :: History -> Board -> Int -> Rules -> String -> IO ()
+parse history board size rules message = do
     vis size
     showcells board size
+    putStrLn message
     putStrLn "Enter command"
     command <- getLine
     case command of ('c':' ':xs) -> do let n = parseNum xs
                                        vis n
-                                       parse [] [] n
+                                       parse [] [] n rules ""
                     ('n':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
-                                       parse (board:history) (livingCell (x,y) board) size
+                                       if (x <= size || y <= size) then parse (board:history) (livingCell (x,y) board) size rules ""
+                                           else parse history board size rules "Input number to high"
                     ('d':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
-                                       parse (board:history) (killCell (x,y) board) size
-                    otherwise -> do putStrLn "Invalid command!"
-                                    parse history board size
+                                       if (x <= size || y <= size) then parse (board:history) (killCell (x,y) board) size rules ""
+                                           else parse history board size rules "Input number to high"
+                    "" -> parse (board:history) (nextgen board rules) size rules ""
+                    "?" -> parse history board size rules (parseRules rules)
+                    otherwise -> parse history board size rules "Invalid command!"
 
 type Pos = (Int, Int)
 type Board = [Pos]
@@ -32,6 +36,9 @@ type Birth = (Int, Int)
 parseNum :: String -> Int
 parseNum [] = 0
 parseNum xs = read (takeWhile isDigit xs)
+
+parseRules :: Rules -> String
+parseRules ((sx,sy),(bx,by)) = "Surviving from " ++ (show sx) ++ " to " ++ (show sy) ++ ", Births from " ++ (show bx) ++ " to " ++ (show by)
 
 vis :: Int -> IO ()
 vis 0 = return ()
