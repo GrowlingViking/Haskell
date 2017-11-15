@@ -2,24 +2,25 @@
 import Data.Char
 
 main = do
-    parse [] []
-
-parse :: History -> Board -> IO ()
-parse history board = do
-    showcells board
+    parse [] [] 0
+                           --Size
+parse :: History -> Board -> Int -> IO ()
+parse history board size = do
+    vis size
+    showcells board size
     putStrLn "Enter command"
     command <- getLine
     case command of ('c':' ':xs) -> do let n = parseNum xs
                                        vis n
-                                       parse [] []
+                                       parse [] [] n
                     ('n':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
-                                       parse (board:history) (livingCell (x,y) board)
+                                       parse (board:history) (livingCell (x,y) board) size
                     ('d':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
-                                       parse (board:history) (killCell (x,y) board)
+                                       parse (board:history) (killCell (x,y) board) size
                     otherwise -> do putStrLn "Invalid command!"
-                                    parse history board
+                                    parse history board size
 
 type Pos = (Int, Int)
 type Board = [Pos]
@@ -33,6 +34,7 @@ parseNum [] = 0
 parseNum xs = read (takeWhile isDigit xs)
 
 vis :: Int -> IO ()
+vis 0 = return ()
 vis nR = do clr
             writeTop nR
             mapM_ (\i -> writerow i nR) [1..nR]
@@ -59,9 +61,10 @@ writerow i nR = do
     mapM_ (\i -> putStr "  .") [1..nR]
     putStrLn ""
 
-showcells :: Board -> IO ()
-showcells [] = return ()
-showcells b = sequence_ [writeat (lft + 3*x, 1 + y) "X" | (x,y) <- b]
+showcells :: Board -> Int -> IO ()
+showcells [] n = return ()
+showcells b size = do sequence_ [writeat ((lft - 2) + 3*x, 1 + y) "X" | (x,y) <- b]
+                      goto (0, size + 3)
 
 isAlive :: Board -> Pos -> Bool
 isAlive b p = elem p b
