@@ -13,30 +13,38 @@ parse history board size rules message = do
     putStrLn message
     putStrLn "Enter command"
     command <- getLine
-    case command of ('c':' ':xs) -> do let n = parseNum xs
-                                       vis n
-                                       parse [] [] n rules ""
-                    ('n':' ':xs) -> do let x = parseNum xs
-                                       let y = parseNum (tail (dropWhile isDigit xs))
-                                       if (x <= size || y <= size) then parse (history) (livingCell (x,y) board) size rules ""
-                                           else parse history board size rules "Input number to high"
-                    ('d':' ':xs) -> do let x = parseNum xs
-                                       let y = parseNum (tail (dropWhile isDigit xs))
-                                       if (x <= size || y <= size) then parse (history) (killCell (x,y) board) size rules ""
-                                           else parse history board size rules "Input number to high"
-                    ('s':' ':xs) -> do let x = parseNum xs
-                                       let y = parseNum (tail (dropWhile isDigit xs))
-                                       parse history board size (sRules (x,y) rules) ""
-                    ('b':' ':xs) -> do let x = parseNum xs
-                                       let y = parseNum (tail (dropWhile isDigit xs))
-                                       parse history board size (bRules (x,y) rules) ""
-                    ('l':' ':xs) -> do let x = parseNum xs
-                                       life history board size rules x False
+    case command of ('c':' ':xs) -> if all isDigit xs then do let n = parseNum xs
+                                                              parse [] [] n rules ""
+                                                              else parse [] [] 0 rules "Input not a number or too may numbers!"
+                    ('n':' ':xs) -> do let ints = words xs
+                                       if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
+                                                                                 if (x > size || y > size) then parse history board size rules "Input number to high!"
+                                                                                 else parse (history) (livingCell (x,y) board) size rules ""
+                                                                                 else parse history board size rules "Input not a number!"
+                    ('d':' ':xs) -> do let ints = words xs
+                                       if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
+                                                                                 if (x > size || y > size) then parse history board size rules "Input number to high!"
+                                                                                 else parse (history) (killCell (x,y) board) size rules ""
+                                                                                 else parse history board size rules "Input not a number!"
+                    ('s':' ':xs) -> do let ints = words xs
+                                       if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
+                                                                                 parse history board size (sRules (x,y) rules) ""
+                                                                                 else parse history board size rules "Input not a number!"
+                    ('b':' ':xs) -> do let ints = words xs
+                                       if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
+                                                                                 parse history board size (bRules (x,y) rules) ""
+                                                                                 else parse history board size rules "Input is not a number!"
+                    ('l':' ':xs) -> do if all isDigit xs then do let x = parseNum xs
+                                                                 life history board size rules x False
+                                                                 else parse history board size rules "Input not a number or too many numbers!"
                     "p" -> parse (tail history) (head history) size rules ""
-                    ('w':' ':xs) ->  
+                    ('w':' ':xs) -> do writeFile xs (parseOut rules size board)
+                                       parse history board size rules "Saved!"
+                    ('r':' ':xs) -> do file <- readFile xs
+                                       parseFile (words file)
                     "" -> parse (board:history) (checkBoard (nextgen board rules) size) size rules ""
                     "?" -> parse history board size rules (parseRules rules)
-                    "q" -> exitSuccess
+                    "q" -> return ()
                     otherwise -> parse history board size rules "Invalid command!"
 
 type Pos = (Int, Int)
@@ -59,6 +67,25 @@ parseNum :: String -> Int
 parseNum [] = 0
 parseNum xs = read (takeWhile isDigit xs)
 
+parseNumbers :: [String] -> (Int, Int)
+parseNumbers [] = (0, 0)
+parseNumbers [x] = (0, 0)
+parseNumbers (x:y:xs) = ((parseNum x), (parseNum y))
+
+parseFile :: [String] -> IO ()
+parseFile file = do let sx = read (file !! 1) :: Int
+                    let sy = read (file !! 2) :: Int
+                    let bx = read (file !! 4) :: Int
+                    let by = read (file !! 5) :: Int
+                    let size = read (file !! 6) :: Int
+                    let board = getBoard (drop 7 file)
+                    parse [] board size ((sx,sy),(bx,by)) "Game loaded!"
+
+getBoard :: [String] -> Board
+getBoard [] = []
+getBoard (x:[]) = []
+getBoard (x:y:xs) = ((read x :: Int),(read y :: Int)):(getBoard xs)
+
 parseRules :: Rules -> String
 parseRules ((sx,sy),(bx,by)) = "Surviving from " ++ (show sx) ++ " to " ++ (show sy) ++ ", Births from " ++ (show bx) ++ " to " ++ (show by)
 
@@ -66,6 +93,7 @@ parseOut :: Rules -> Int -> Board -> String
 parseOut ((sx,sy), (bx,by)) size board = "s " ++ (show sx) ++ " " ++ (show sy) ++ " b " ++ (show bx) ++ " " ++ (show by) ++ " " ++ (show size) ++ " " ++ parseBoard board
 
 parseBoard :: Board -> String
+parseBoard [] = ""
 parseBoard (x:xs) = parsePos x ++ parseBoard xs
 
 parsePos :: Pos -> String
