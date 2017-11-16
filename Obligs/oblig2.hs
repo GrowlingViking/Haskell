@@ -20,12 +20,12 @@ parse history board size rules message = do
                                                               else parse [] [] 0 rules "Input not a number or too may numbers!"
                     ('n':' ':xs) -> do let ints = words xs
                                        if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
-                                                                                 if (x > size || y > size) then parse history board size rules "Input number to high!"
+                                                                                 if (x > size || x <= 0 || y > size || y <= 0) then parse history board size rules "Input number must be higher than 0 and lower than the size of the board!"
                                                                                  else parse (history) (livingCell (x,y) board) size rules ""
                                                                                  else parse history board size rules "Input not a number!"
                     ('d':' ':xs) -> do let ints = words xs
                                        if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
-                                                                                 if (x > size || y > size) then parse history board size rules "Input number to high!"
+                                                                                 if (x > size || x <= 0 || y > size || y <= 0) then parse history board size rules "Input number must be higher than 0 and lower than the size of the board!"
                                                                                  else parse (history) (killCell (x,y) board) size rules ""
                                                                                  else parse history board size rules "Input not a number!"
                     ('s':' ':xs) -> do let ints = words xs
@@ -58,11 +58,11 @@ type Birth = (Int, Int)
 
 life :: History -> Board -> Int -> Rules -> Int -> Bool -> IO ()
 life history board size rules 0 stable = parse history board size rules "Done!"
-life history board size rules x True = parse history board size rules ("Achieved after " ++ (show x) ++ " turns")
+life history board size rules x True = parse history board size rules ""
 life history board size rules x False = do vis size
                                            showcells board size
                                            wait 500000
-                                           if elem board history then life (board:history) (checkBoard (nextgen board rules) size) size rules x True
+                                           if elem board history then life history board size rules x True
                                            else life (board:history) (checkBoard (nextgen board rules) size) size rules (x - 1) False
 
 parseNum :: String -> Int
