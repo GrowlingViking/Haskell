@@ -1,5 +1,6 @@
 --Sigurd Gravning
 import Data.Char
+import System.Exit
 
 main = do
     parse [] [] 0 ((2,3),(3,3)) ""
@@ -9,6 +10,7 @@ parse history board size rules message = do
     vis size
     showcells board size
     putStrLn message
+    if elem board history then putStrLn "Stable configuration achieved!" else putStrLn ""
     putStrLn "Enter command"
     command <- getLine
     case command of ('c':' ':xs) -> do let n = parseNum xs
@@ -22,8 +24,15 @@ parse history board size rules message = do
                                        let y = parseNum (tail (dropWhile isDigit xs))
                                        if (x <= size || y <= size) then parse (board:history) (killCell (x,y) board) size rules ""
                                            else parse history board size rules "Input number to high"
-                    "" -> parse (board:history) (nextgen board rules) size rules ""
+                    ('s':' ':xs) -> do let x = parseNum xs
+                                       let y = parseNum (tail (dropWhile isDigit xs))
+                                       parse history board size (sRules (x,y) rules) ""
+                    ('b':' ':xs) -> do let x = parseNum xs
+                                       let y = parseNum (tail (dropWhile isDigit xs))
+                                       parse history board size (bRules (x,y) rules) ""
+                    "" -> parse (board:history) (checkBoard (nextgen board rules) size) size rules ""
                     "?" -> parse history board size rules (parseRules rules)
+                    "q" -> exitSuccess
                     otherwise -> parse history board size rules "Invalid command!"
 
 type Pos = (Int, Int)
@@ -48,6 +57,18 @@ vis nR = do clr
 
 clr :: IO()
 clr = putStr "\ESC[2J"
+
+checkBoard :: Board -> Int -> Board
+checkBoard b s = [p | p <- b, checkPos p s]
+
+checkPos :: Pos -> Int -> Bool
+checkPos (x,y) s = if x <= s && y <= s then True else False
+
+sRules :: Survive -> Rules -> Rules
+sRules survive (s,b) = (survive, b)
+
+bRules :: Birth -> Rules -> Rules
+bRules birth (s,b) = (s, birth)
 
 writeTop :: Int -> IO ()
 writeTop nR = writeat (lft + 1, 0)
