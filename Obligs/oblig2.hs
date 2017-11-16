@@ -1,4 +1,6 @@
---Sigurd Gravning
+-- Sigurd Gravning
+-- s 2 3 b 3 3 50 11 17 10 18 10 16 9 19 9 15 8 18 8 17 8 16 5 22 4 22 4 23 3 24 2 23 2 20 2 21 6 20 6 19 5 18 4 18 3 18 2 18 6 14 6 15 5 16 4 16 3 16 2 16 2 14 5 12 4 12 4 11 2 13 2 11 3 10
+
 import Data.Char
 import System.Exit
 
@@ -28,11 +30,11 @@ parse history board size rules message = do
                                                                                  else parse history board size rules "Input not a number!"
                     ('s':' ':xs) -> do let ints = words xs
                                        if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
-                                                                                 parse history board size (sRules (x,y) rules) ""
+                                                                                 parse history board size (sRules (x,y) rules) "Rules changed!"
                                                                                  else parse history board size rules "Input not a number!"
                     ('b':' ':xs) -> do let ints = words xs
                                        if all (\a -> all isDigit a) ints then do let (x,y) = parseNumbers ints
-                                                                                 parse history board size (bRules (x,y) rules) ""
+                                                                                 parse history board size (bRules (x,y) rules) "Rules changed!"
                                                                                  else parse history board size rules "Input is not a number!"
                     ('l':' ':xs) -> do if all isDigit xs then do let x = parseNum xs
                                                                  life history board size rules x False
@@ -112,7 +114,7 @@ checkBoard :: Board -> Int -> Board
 checkBoard b s = [p | p <- b, checkPos p s]
 
 checkPos :: Pos -> Int -> Bool
-checkPos (x,y) s = if x <= s && y <= s then True else False
+checkPos (x,y) s = if 0 < x && x <= s && 0 < y && y <= s then True else False
 
 sRules :: Survive -> Rules -> Rules
 sRules survive (s,b) = (survive, b)
