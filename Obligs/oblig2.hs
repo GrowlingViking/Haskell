@@ -4,13 +4,13 @@ import System.Exit
 
 main = do
     parse [] [] 0 ((2,3),(3,3)) ""
-                           --Size
+                           --Size          --Message
 parse :: History -> Board -> Int -> Rules -> String -> IO ()
 parse history board size rules message = do
     vis size
     showcells board size
-    putStrLn message
     if elem board history then putStrLn "Stable configuration achieved!" else putStrLn ""
+    putStrLn message
     putStrLn "Enter command"
     command <- getLine
     case command of ('c':' ':xs) -> do let n = parseNum xs
@@ -18,11 +18,11 @@ parse history board size rules message = do
                                        parse [] [] n rules ""
                     ('n':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
-                                       if (x <= size || y <= size) then parse (board:history) (livingCell (x,y) board) size rules ""
+                                       if (x <= size || y <= size) then parse (history) (livingCell (x,y) board) size rules ""
                                            else parse history board size rules "Input number to high"
                     ('d':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
-                                       if (x <= size || y <= size) then parse (board:history) (killCell (x,y) board) size rules ""
+                                       if (x <= size || y <= size) then parse (history) (killCell (x,y) board) size rules ""
                                            else parse history board size rules "Input number to high"
                     ('s':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
@@ -30,6 +30,8 @@ parse history board size rules message = do
                     ('b':' ':xs) -> do let x = parseNum xs
                                        let y = parseNum (tail (dropWhile isDigit xs))
                                        parse history board size (bRules (x,y) rules) ""
+                    ('l':' ':xs) -> do let x = parseNum xs
+                                       life history board size rules x False
                     "" -> parse (board:history) (checkBoard (nextgen board rules) size) size rules ""
                     "?" -> parse history board size rules (parseRules rules)
                     "q" -> exitSuccess
@@ -41,6 +43,15 @@ type History = [Board]
 type Rules = (Survive, Birth)
 type Survive = (Int, Int)
 type Birth = (Int, Int)
+
+life :: History -> Board -> Int -> Rules -> Int -> Bool -> IO ()
+life history board size rules 0 stable = parse history board size rules "Done!"
+life history board size rules x True = parse history board size rules ("Achieved after " ++ (show x) ++ " turns")
+life history board size rules x False = do vis size
+                                           showcells board size
+                                           wait 500000
+                                           if elem board history then life (board:history) (checkBoard (nextgen board rules) size) size rules x True
+                                           else life (board:history) (checkBoard (nextgen board rules) size) size rules (x - 1) False
 
 parseNum :: String -> Int
 parseNum [] = 0
