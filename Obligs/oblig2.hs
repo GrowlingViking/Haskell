@@ -32,6 +32,8 @@ parse history board size rules message = do
                                        parse history board size (bRules (x,y) rules) ""
                     ('l':' ':xs) -> do let x = parseNum xs
                                        life history board size rules x False
+                    "p" -> parse (tail history) (head history) size rules ""
+                    ('w':' ':xs) ->  
                     "" -> parse (board:history) (checkBoard (nextgen board rules) size) size rules ""
                     "?" -> parse history board size rules (parseRules rules)
                     "q" -> exitSuccess
@@ -59,6 +61,15 @@ parseNum xs = read (takeWhile isDigit xs)
 
 parseRules :: Rules -> String
 parseRules ((sx,sy),(bx,by)) = "Surviving from " ++ (show sx) ++ " to " ++ (show sy) ++ ", Births from " ++ (show bx) ++ " to " ++ (show by)
+
+parseOut :: Rules -> Int -> Board -> String
+parseOut ((sx,sy), (bx,by)) size board = "s " ++ (show sx) ++ " " ++ (show sy) ++ " b " ++ (show bx) ++ " " ++ (show by) ++ " " ++ (show size) ++ " " ++ parseBoard board
+
+parseBoard :: Board -> String
+parseBoard (x:xs) = parsePos x ++ parseBoard xs
+
+parsePos :: Pos -> String
+parsePos (x,y) = (show x) ++ " " ++ (show y) ++ " "
 
 vis :: Int -> IO ()
 vis 0 = return ()
